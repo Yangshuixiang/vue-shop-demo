@@ -23,13 +23,15 @@
         <!--active-text-color选中菜单的颜色-->
         <!--unique-opened是element菜单的属性,默认true,每次只打开一个子菜单-->
         <!--collapse-transition除去动画效果,拖延-->
+        <!--router是element表单提供的跳转功能-->
         <el-menu
             background-color="#2b4b6b"
             text-color="#fff"
             active-text-color="#409EFF"
             unique-opened
             :collapse="isCollapse"
-            :collapse-transition="false">
+            :collapse-transition="false"
+            :router="true">
           <!--一级菜单-->
           <!--:index,:key动态数据绑定-->
           <el-submenu v-for="item in menuList" :key="item.id" :index="item.id + ''">
@@ -42,7 +44,7 @@
             </template>
 
             <!--二级菜单-->
-            <el-menu-item :index="subItem.id + ''" v-for="subItem in item.children" :key="subItem.id">
+            <el-menu-item :index="'/'+subItem.path" v-for="subItem in item.children" :key="subItem.id">
               <template slot="title">
                 <!--图标-->
                 <i class="el-icon-menu"></i>
@@ -50,14 +52,17 @@
                 <span>{{ subItem.authName }}</span>
               </template>
             </el-menu-item>
-
           </el-submenu>
-
         </el-menu>
-
       </el-aside>
       <!--右边-->
-      <el-main>Main</el-main>
+      <el-main>
+
+        <router-view></router-view>
+
+      </el-main>
+
+
     </el-container>
   </el-container>
 
