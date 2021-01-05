@@ -21,7 +21,7 @@
         </div>
         <!--菜单区-->
         <!--active-text-color选中菜单的颜色-->
-        <!--unique-opened是element菜单的属性,默认true,每次只打开一个子菜单-->
+        <!--unique-opened是element菜单的属性,默认true,每次只打开一个子菜单其他的收拢-->
         <!--collapse-transition除去动画效果,拖延-->
         <!--router是element表单提供的跳转功能-->
         <el-menu
@@ -31,7 +31,8 @@
             unique-opened
             :collapse="isCollapse"
             :collapse-transition="false"
-            :router="true">
+            :router="true"
+            :default-active="activePath">
           <!--一级菜单-->
           <!--:index,:key动态数据绑定-->
           <el-submenu v-for="item in menuList" :key="item.id" :index="item.id + ''">
@@ -44,7 +45,7 @@
             </template>
 
             <!--二级菜单-->
-            <el-menu-item :index="'/'+subItem.path" v-for="subItem in item.children" :key="subItem.id">
+            <el-menu-item @click="saveNavState('/'+subItem.path)" :index="'/'+subItem.path" v-for="subItem in item.children" :key="subItem.id">
               <template slot="title">
                 <!--图标-->
                 <i class="el-icon-menu"></i>
@@ -87,6 +88,8 @@ export default {
 
       },
       isCollapse: false,
+      //被激活的链接地址
+      activePath:"",
 
     }
 
@@ -96,6 +99,7 @@ export default {
   //生命周期函数
   created() {
     this.getMenuList()
+    this.activePath = window.sessionStorage.getItem("activePath")
 
   },
 
@@ -120,6 +124,12 @@ export default {
 
       this.isCollapse = !this.isCollapse;
 
+    },
+    /*保存链接接激活高亮*/
+    saveNavState(activePath){
+      window.sessionStorage.setItem("activePath", activePath)
+      //切换的时候更新存储值
+      this.activePath = activePath
     }
 
   }

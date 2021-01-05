@@ -15,7 +15,11 @@ import {Message,
     Menu,
     Submenu,
     MenuItem,
-    } from "element-ui";
+    Breadcrumb,
+    BreadcrumbItem,
+    Card,
+    Row,
+    Col} from "element-ui";
 
 Vue.use(Button)
 Vue.use(FormItem)
@@ -28,6 +32,11 @@ Vue.use(Main)
 Vue.use(Menu)
 Vue.use(Submenu)
 Vue.use(MenuItem)
+Vue.use(Breadcrumb)
+Vue.use(BreadcrumbItem)
+Vue.use(Card)
+Vue.use(Row)
+Vue.use(Col)
 //全局挂载到Vue上
 //$message自定义,每一个组件可以通过this访问
 Vue.prototype.$message = Message;
