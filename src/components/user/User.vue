@@ -50,11 +50,13 @@
         </el-table-column>
         <el-table-column label="操作" width="180px">
           <!--按钮-->
-          <template>
+          <!--slot-scope="scope"拿到此行数据的信息-->
+          <template slot-scope="scope">
             <!--修改-->
             <!--enterable鼠标是否可进入到 tooltip 中,element-->
             <el-tooltip class="item" effect="dark" content="修改" placement="top" :enterable="false">
-              <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+              <el-button @click="showEditUserForm(scope.row.id)" type="primary" icon="el-icon-edit"
+                         size="mini"></el-button>
             </el-tooltip>
             <!--分配权限-->
             <el-tooltip class="item" effect="dark" content="分配角色" placement="top" :enterable="false">
@@ -105,9 +107,33 @@
         </el-form>
         <!--底部区域-->
         <span slot="footer" class="dialog-footer">
-    <el-button @click="addDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="addUser">确 定</el-button>
-  </span>
+          <el-button @click="addDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="addUser">确 定</el-button>
+        </span>
+      </el-dialog>
+
+      <!--修改用户对话框-->
+      <el-dialog
+          title="提示"
+          :visible.sync="editUserdialogVisible"
+          width="50%">
+
+        <el-form :model="editUserForm" :rules="editUserFromRules" ref="editUserFormRef" label-width="70px">
+          <el-form-item label="用户名">
+            <el-input v-model="editUserForm.username" disabled></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="editUserForm.email"></el-input>
+          </el-form-item>
+          <el-form-item label="手机" prop="mobile">
+            <el-input v-model="editUserForm.mobile"></el-input>
+          </el-form-item>
+        </el-form>
+
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="editUserdialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="editUserdialogVisible = false">确 定</el-button>
+        </span>
       </el-dialog>
 
 
@@ -127,7 +153,7 @@ export default {
       const regEmail = /^\w+@\w+(\.\w+)+$/
       if (regEmail.test(value)) {
         callback()
-      }else{
+      } else {
         callback(new Error("邮箱格式不正确!"))
       }
     }
@@ -137,7 +163,7 @@ export default {
       const regMobile = /^1[34578]\d{9}$/
       if (regMobile.test(value)) {
         callback()
-      }else{
+      } else {
         callback(new Error("手机号格式不正确!"))
       }
     }
@@ -184,6 +210,21 @@ export default {
           {validator: checkMobileRule, trigger: 'blur'}
         ],
       },
+      //控制修改用户对话框
+      editUserdialogVisible: false,
+      //查询用户信息,弹框
+      editUserForm: {},
+      //修改用户信息的表达校验规则
+      editUserFromRules: {
+        email: [
+          {required: true, message: '请输入用户邮箱', trigger: 'blur'},
+          {validator: checkEmailRule, trigger: 'blur'}
+        ],
+        mobile: [
+          {required: true, message: '请输入用户手机号', trigger: 'blur'},
+          {validator: checkMobileRule, trigger: 'blur'}
+        ]
+      }
     }
   },
   created() {
@@ -242,6 +283,17 @@ export default {
         //刷新列表
         this.getUserList()
       })
+    },
+    //点开修改用户弹框,查询用户数据
+    async showEditUserForm(userId) {
+      //发起请求
+      const {data: res} = await this.$http.get("users/" + userId);
+      if (res.meta.status !== 200) return this.$message.error("查询用户信息失败!")
+      this.editUserForm = res.data
+      //要不要直接用el提供的弹框函数,取决于弹框的同时要不要干点其他的事情
+      //打开弹窗
+      this.editUserdialogVisible = true;
+
     }
 
   }
