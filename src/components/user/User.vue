@@ -114,9 +114,10 @@
 
       <!--修改用户对话框-->
       <el-dialog
-          title="提示"
+          title="修改用户"
           :visible.sync="editUserdialogVisible"
-          width="50%">
+          width="50%"
+          @close="editDialogClose">
 
         <el-form :model="editUserForm" :rules="editUserFromRules" ref="editUserFormRef" label-width="70px">
           <el-form-item label="用户名">
@@ -294,6 +295,10 @@ export default {
       //打开弹窗
       this.editUserdialogVisible = true;
 
+    },
+    //修改用户弹框的重置
+    editDialogClose(){
+        this.$refs.editUserFormRef.resetFields();
     }
 
   }
