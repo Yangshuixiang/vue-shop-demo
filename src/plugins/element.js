@@ -24,7 +24,8 @@ import {Message,
     TableColumn,
     Switch,
     Tooltip,
-    Pagination} from "element-ui";
+    Pagination,
+    Dialog} from "element-ui";
 
 
 Vue.use(Button)
@@ -48,6 +49,7 @@ Vue.use(TableColumn)
 Vue.use(Switch)
 Vue.use(Tooltip)
 Vue.use(Pagination)
+Vue.use(Dialog)
 //全局挂载到Vue上
 //$message自定义,每一个组件可以通过this访问
 Vue.prototype.$message = Message;

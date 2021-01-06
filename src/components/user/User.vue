@@ -13,8 +13,10 @@
       <!--element提供Row 组件，el-row-->
       <el-row :gutter="20">
         <el-col :span="10">
-          <el-input placeholder="请输入内容">
-            <el-button slot="append" icon="el-icon-search"></el-button>
+          <!--clearable可清空,element-->
+          <!--clear清空再查询-->
+          <el-input placeholder="请输入内容" v-model="queryUserInfo.query" clearable @clear=getUserList @change="getUserList">
+            <el-button slot="append" icon="el-icon-search" @click="getUserList"></el-button>
           </el-input>
         </el-col>
         <el-col :span="4">
@@ -40,13 +42,14 @@
             <!--switch,element开关-->
             <el-switch
                 v-model="scope.row.mg_state"
-                active-color="#13ce66">
+                active-color="#13ce66"
+                @change="userStateChange(scope.row)">
             </el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
           <!--按钮-->
-          <template >
+          <template>
             <!--修改-->
             <!--enterable鼠标是否可进入到 tooltip 中,element-->
             <el-tooltip class="item" effect="dark" content="修改" placement="top" :enterable="false">
@@ -122,20 +125,29 @@ export default {
       this.userList = res.data.users
       this.totalUsers = res.data.total
     },
-    //监听pagesize改变时间
+    //监听pagesize改变事件
     // eslint-disable-next-line no-unused-vars
-    handleSizeChange(newSize){
-    //console.log(newSize)
+    handleSizeChange(newSize) {
+      //console.log(newSize)
       this.queryUserInfo.pagesize = newSize
       this.getUserList()
 
     },
-    //页码改变时间
+    //页码改变事件
     // eslint-disable-next-line no-unused-vars
-    handleCurrentChange(newPage){
-    //console.log(newPage)
+    handleCurrentChange(newPage) {
+      //console.log(newPage)
       this.queryUserInfo.pagenum = newPage
       this.getUserList()
+    },
+    //用户开关状态的改变
+    async userStateChange(userInfo) {
+      const {data: res} = await this.$http.put(`users/${userInfo.id}/state/${userInfo.mg_state}`);
+      if (res.meta.status !== 200) {
+        userInfo.mg_state = !userInfo.mg_state
+        return this.$message.error("修改用户状态失败!")
+      }
+      this.$message.success("更新用户状态成功!")
     }
 
   }

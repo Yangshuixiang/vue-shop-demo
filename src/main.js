@@ -14,7 +14,7 @@ Vue.use(ElementUI);
 Vue.prototype.$http = axios;
 //配置请求的根路径
 axios.defaults.baseURL = "http://127.0.0.1:8888/api/private/v1/"
-//
+//拦截所有的request并且在请求头中附上token
 axios.interceptors.request.use(config=>{
   //给config赋值
   //Authorization添加请求头
