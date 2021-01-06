@@ -7,7 +7,8 @@ body,
     padding: 0;
 }
 
-.l-breadcrumb{
+/*表格和面包屑导航间隔*/
+.el-breadcrumb{
 
     margin-bottom: 15px;
     font-size: 12px;
@@ -15,6 +16,17 @@ body,
 }
 
 .el-card{
-
     box-shadow: 0 1px 1px rgba(0,0,0,0.15) !important;
+}
+
+/*table字体大小和向上的间隔*/
+.el-table{
+
+    margin-top:20px;
+    font-size: 12px;
+
+}
+
+.el-pagination{
+    margin-top: 15px;
 }

@@ -9,11 +9,11 @@
 
     <!--卡片式图-->
     <el-card>
-    <!--搜索输入框区域-->
+      <!--搜索输入框区域-->
       <!--element提供Row 组件，el-row-->
       <el-row :gutter="20">
         <el-col :span="10">
-          <el-input placeholder="请输入内容" >
+          <el-input placeholder="请输入内容">
             <el-button slot="append" icon="el-icon-search"></el-button>
           </el-input>
         </el-col>
@@ -22,8 +22,61 @@
           <el-button type="primary">添加用户</el-button>
 
         </el-col>
-
       </el-row>
+
+      <!--表格区-->
+      <!--border边框线/stripe变色,element-->
+      <el-table :data="userList" border stripe>
+        <!--索引type-->
+        <el-table-column label="序号" type="index"></el-table-column>
+        <el-table-column label="姓名" prop="username"></el-table-column>
+        <el-table-column label="邮箱" prop="email"></el-table-column>
+        <el-table-column label="电话" prop="mobile"></el-table-column>
+        <el-table-column label="角色" prop="role_name"></el-table-column>
+        <!--<el-table-column label="状态" prop="mg_state">-->
+        <el-table-column label="状态">
+          <!--定义作用域插槽,slot-scope接收数据,scope固定-->
+          <template slot-scope="scope">
+            <!--switch,element开关-->
+            <el-switch
+                v-model="scope.row.mg_state"
+                active-color="#13ce66">
+            </el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="180px">
+          <!--按钮-->
+          <template >
+            <!--修改-->
+            <!--enterable鼠标是否可进入到 tooltip 中,element-->
+            <el-tooltip class="item" effect="dark" content="修改" placement="top" :enterable="false">
+              <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+            </el-tooltip>
+            <!--分配权限-->
+            <el-tooltip class="item" effect="dark" content="分配角色" placement="top" :enterable="false">
+              <el-button type="primary" icon="el-icon-setting" size="mini"></el-button>
+            </el-tooltip>
+            <!--删除-->
+            <el-tooltip class="item" effect="dark" content="删除" placement="top" :enterable="false">
+              <el-button type="primary" icon="el-icon-delete" size="mini"></el-button>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+
+      </el-table>
+
+      <!--分页-->
+      <!--layout指定页面分页显示结构,有什么显示什么-->
+      <el-pagination
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="queryUserInfo.pagenum"
+          :page-sizes="[1, 2, 10, 20]"
+          :page-size="queryUserInfo.pagesize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="totalUsers">
+      </el-pagination>
+
 
     </el-card>
 
@@ -34,6 +87,59 @@
 
 <script>
 export default {
+
+  data() {
+
+    return {
+      //获取用户列表的的参数对象
+      queryUserInfo: {
+        query: "",
+        //当前页数
+        pagenum: 1,
+        //当前每页显示条数
+        pagesize: 2
+      },
+      //定义一个用户列表
+      userList: [],
+      totalUsers: 0,
+      //表格用户数据对象
+      tableData: [{}]
+
+
+    }
+  },
+  created() {
+    //打开页面即调用获取用户列表的接口
+    this.getUserList();
+
+  },
+  methods: {
+    async getUserList() {
+
+      const {data: res} = await this.$http.get("users", {params: this.queryUserInfo});
+      if (res.meta.status !== 200) return this.$message.error("获取用户列表失败!")
+      // console.log(res)
+      this.userList = res.data.users
+      this.totalUsers = res.data.total
+    },
+    //监听pagesize改变时间
+    // eslint-disable-next-line no-unused-vars
+    handleSizeChange(newSize){
+    //console.log(newSize)
+      this.queryUserInfo.pagesize = newSize
+      this.getUserList()
+
+    },
+    //页码改变时间
+    // eslint-disable-next-line no-unused-vars
+    handleCurrentChange(newPage){
+    //console.log(newPage)
+      this.queryUserInfo.pagenum = newPage
+      this.getUserList()
+    }
+
+  }
+
 
 }
 </script>

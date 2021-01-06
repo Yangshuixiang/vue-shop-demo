@@ -19,7 +19,13 @@ import {Message,
     BreadcrumbItem,
     Card,
     Row,
-    Col} from "element-ui";
+    Col,
+    Table,
+    TableColumn,
+    Switch,
+    Tooltip,
+    Pagination} from "element-ui";
+
 
 Vue.use(Button)
 Vue.use(FormItem)
@@ -37,6 +43,11 @@ Vue.use(BreadcrumbItem)
 Vue.use(Card)
 Vue.use(Row)
 Vue.use(Col)
+Vue.use(Table)
+Vue.use(TableColumn)
+Vue.use(Switch)
+Vue.use(Tooltip)
+Vue.use(Pagination)
 //全局挂载到Vue上
 //$message自定义,每一个组件可以通过this访问
 Vue.prototype.$message = Message;
