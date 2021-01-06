@@ -88,7 +88,8 @@
           width="50%"
           @close="addDialogClose">
         <!--内容主题区域-->
-        <el-form :model="addUserForm" :rules="addUserFormRules" ref="addUserFormRef" label-width="100px" class="demo-ruleForm">
+        <el-form :model="addUserForm" :rules="addUserFormRules" ref="addUserFormRef" label-width="100px"
+                 class="demo-ruleForm">
           <el-form-item label="用户名" prop="username">
             <el-input v-model="addUserForm.username"></el-input>
           </el-form-item>
@@ -122,18 +123,18 @@ export default {
 
   data() {
     //校验邮箱规则
-    var checkEmailRule = (rule,value,callback) =>{
+    var checkEmailRule = (rule, value, callback) => {
       const regEmail = /^\w+@\w+(\.\w+)+$/
-      if (regEmail.test(value)){
+      if (regEmail.test(value)) {
         return callback
       }
       callback(new Error("邮箱格式不正确!"))
     }
 
     //校验手机号规则
-    var checkMobileRule = (rule,value,callback) =>{
+    var checkMobileRule = (rule, value, callback) => {
       const regMobile = /^1[34578]\d{9}$/
-      if (regMobile.test(value)){
+      if (regMobile.test(value)) {
         return callback
       }
       callback(new Error("手机号格式不正确!"))
@@ -156,29 +157,29 @@ export default {
       //控制添加用户弹窗的隐藏和显示
       addDialogVisible: false,
       //添加用户的表格对象
-      addUserForm:{
-        username:"",
-        password:"",
-        email:"",
-        mobile:""
+      addUserForm: {
+        username: "",
+        password: "",
+        email: "",
+        mobile: ""
       },
       //添加用户的表格对象校验规则
-      addUserFormRules:{
-        username:[
-          { required: true, message: '请输入用户名称', trigger: 'blur' },
-          { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+      addUserFormRules: {
+        username: [
+          {required: true, message: '请输入用户名称', trigger: 'blur'},
+          {min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur'}
         ],
-        password:[
-          { required: true, message: '请输入用户密码', trigger: 'blur' },
-          { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
+        password: [
+          {required: true, message: '请输入用户密码', trigger: 'blur'},
+          {min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur'}
         ],
-        email:[
-          { required: true, message: '请输入用户邮箱', trigger: 'blur' },
-          {validator:checkEmailRule,trigger: 'blur'}
+        email: [
+          {required: true, message: '请输入用户邮箱', trigger: 'blur'},
+          {validator: checkEmailRule, trigger: 'blur'}
         ],
-        mobile:[
-          { required: true, message: '请输入用户手机号', trigger: 'blur' },
-          {validator:checkMobileRule,trigger: 'blur'}
+        mobile: [
+          {required: true, message: '请输入用户手机号', trigger: 'blur'},
+          {validator: checkMobileRule, trigger: 'blur'}
         ],
       },
     }
@@ -222,19 +223,23 @@ export default {
       this.$message.success("更新用户状态成功!")
     },
     //关闭弹框情况
-    addDialogClose(){
+    addDialogClose() {
       //调用ref的函数清空
       this.$refs.addUserFormRef.resetFields();
     },
     //点击确认,添加用户
-    addUser(){
-      this.$refs.addUserFormRef.validate(
-          valid =>{
-            // console.log(valid)
-            if (!valid) return
-          }
-      )
-
+    addUser() {
+      this.$refs.addUserFormRef.validate(async valid => {
+        if (!valid) return
+        //表单预校验通过则发起请求
+        const {data: res} = await this.$http.post("users", this.addUserForm)
+        if (res.meta.status !== 200) this.$message.error("添加用户失败!")
+        this.$message.success("添加用户成功!")
+        //隐藏弹框
+        this.addDialogVisible = false
+        //刷新列表
+        this.getUserList()
+      })
     }
 
   }
