@@ -126,18 +126,20 @@ export default {
     var checkEmailRule = (rule, value, callback) => {
       const regEmail = /^\w+@\w+(\.\w+)+$/
       if (regEmail.test(value)) {
-        return callback
+        callback()
+      }else{
+        callback(new Error("邮箱格式不正确!"))
       }
-      callback(new Error("邮箱格式不正确!"))
     }
 
     //校验手机号规则
     var checkMobileRule = (rule, value, callback) => {
       const regMobile = /^1[34578]\d{9}$/
       if (regMobile.test(value)) {
-        return callback
+        callback()
+      }else{
+        callback(new Error("手机号格式不正确!"))
       }
-      callback(new Error("手机号格式不正确!"))
     }
 
     return {
