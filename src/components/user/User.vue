@@ -15,13 +15,14 @@
         <el-col :span="10">
           <!--clearable可清空,element-->
           <!--clear清空再查询-->
-          <el-input placeholder="请输入内容" v-model="queryUserInfo.query" clearable @clear=getUserList @change="getUserList">
+          <el-input placeholder="请输入内容" v-model="queryUserInfo.query" clearable @clear=getUserList
+                    @change="getUserList">
             <el-button slot="append" icon="el-icon-search" @click="getUserList"></el-button>
           </el-input>
         </el-col>
         <el-col :span="4">
 
-          <el-button type="primary">添加用户</el-button>
+          <el-button type="primary" @click="addDialogVisible = true">添加用户</el-button>
 
         </el-col>
       </el-row>
@@ -80,6 +81,34 @@
           :total="totalUsers">
       </el-pagination>
 
+      <!--添加用户的弹框-->
+      <el-dialog
+          title="添加用户"
+          :visible.sync="addDialogVisible"
+          width="50%"
+          @close="addDialogClose">
+        <!--内容主题区域-->
+        <el-form :model="addUserForm" :rules="addUserFormRules" ref="addUserFormRef" label-width="100px" class="demo-ruleForm">
+          <el-form-item label="用户名" prop="username">
+            <el-input v-model="addUserForm.username"></el-input>
+          </el-form-item>
+          <el-form-item label="密码" prop="password">
+            <el-input v-model="addUserForm.password"></el-input>
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="addUserForm.email"></el-input>
+          </el-form-item>
+          <el-form-item label="手机" prop="mobile">
+            <el-input v-model="addUserForm.mobile"></el-input>
+          </el-form-item>
+        </el-form>
+        <!--底部区域-->
+        <span slot="footer" class="dialog-footer">
+    <el-button @click="addDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="addUser">确 定</el-button>
+  </span>
+      </el-dialog>
+
 
     </el-card>
 
@@ -92,6 +121,23 @@
 export default {
 
   data() {
+    //校验邮箱规则
+    var checkEmailRule = (rule,value,callback) =>{
+      const regEmail = /^\w+@\w+(\.\w+)+$/
+      if (regEmail.test(value)){
+        return callback
+      }
+      callback(new Error("邮箱格式不正确!"))
+    }
+
+    //校验手机号规则
+    var checkMobileRule = (rule,value,callback) =>{
+      const regMobile = /^1[34578]\d{9}$/
+      if (regMobile.test(value)){
+        return callback
+      }
+      callback(new Error("手机号格式不正确!"))
+    }
 
     return {
       //获取用户列表的的参数对象
@@ -106,9 +152,35 @@ export default {
       userList: [],
       totalUsers: 0,
       //表格用户数据对象
-      tableData: [{}]
-
-
+      tableData: [{}],
+      //控制添加用户弹窗的隐藏和显示
+      addDialogVisible: false,
+      //添加用户的表格对象
+      addUserForm:{
+        username:"",
+        password:"",
+        email:"",
+        mobile:""
+      },
+      //添加用户的表格对象校验规则
+      addUserFormRules:{
+        username:[
+          { required: true, message: '请输入用户名称', trigger: 'blur' },
+          { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+        ],
+        password:[
+          { required: true, message: '请输入用户密码', trigger: 'blur' },
+          { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
+        ],
+        email:[
+          { required: true, message: '请输入用户邮箱', trigger: 'blur' },
+          {validator:checkEmailRule,trigger: 'blur'}
+        ],
+        mobile:[
+          { required: true, message: '请输入用户手机号', trigger: 'blur' },
+          {validator:checkMobileRule,trigger: 'blur'}
+        ],
+      },
     }
   },
   created() {
@@ -148,6 +220,21 @@ export default {
         return this.$message.error("修改用户状态失败!")
       }
       this.$message.success("更新用户状态成功!")
+    },
+    //关闭弹框情况
+    addDialogClose(){
+      //调用ref的函数清空
+      this.$refs.addUserFormRef.resetFields();
+    },
+    //点击确认,添加用户
+    addUser(){
+      this.$refs.addUserFormRef.validate(
+          valid =>{
+            // console.log(valid)
+            if (!valid) return
+          }
+      )
+
     }
 
   }
